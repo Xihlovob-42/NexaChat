@@ -8,7 +8,8 @@ public class Register {
     private String cellPhoneNumber;
     private String firstName;
     private String lastName;
-
+    
+    // Validats the username format
     public boolean checkUserName() {
         return username != null
                 && username.contains("_")
