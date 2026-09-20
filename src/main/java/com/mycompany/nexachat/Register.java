@@ -44,7 +44,8 @@ public class Register {
         return cellPhoneNumber != null
                 && cellPhoneNumber.matches("^\\+27\\d{9}$");
     }
-
+    
+    // Registers a user after validating results
     public String registerUser() {
         if (!checkUserName()) {
             return "Username is not correctly formatted.";
