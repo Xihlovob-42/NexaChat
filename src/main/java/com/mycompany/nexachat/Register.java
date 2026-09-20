@@ -16,6 +16,7 @@ public class Register {
                 && username.length() <= 5;
     }
 
+    // Validates password complexity
     public boolean checkPasswordComplexity() {
         if (password == null || password.length() < 8) {
             return false;
