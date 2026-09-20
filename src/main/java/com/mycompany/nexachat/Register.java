@@ -38,7 +38,8 @@ public class Register {
 
         return hasCapital && hasNumber && hasSpecialCharacter;
     }
-
+    
+    // Validates South African cellphone number
     public boolean checkCellPhoneNumber() {
         return cellPhoneNumber != null
                 && cellPhoneNumber.matches("^\\+27\\d{9}$");
