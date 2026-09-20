@@ -62,6 +62,7 @@ public class Register {
         return "Registration successful.";
     }
 
+    // Check the entered username and password
     public boolean loginUser(String enteredUsername, String enteredPassword) {
         return username != null
                 && password != null
