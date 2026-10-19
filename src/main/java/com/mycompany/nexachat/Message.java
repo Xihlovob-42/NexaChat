@@ -14,6 +14,7 @@ public class Message {
     // Required message collections
     private static final ArrayList<Message> sentMessages = new ArrayList<>();
     private static final ArrayList<Message> disregardedMessages = new ArrayList<>();
+    private static final ArrayList<Message> storedMessages = new ArrayList<>();
     private static final ArrayList<String> messageHashes = new ArrayList<>();
     private static final ArrayList<String> messageIDs = new ArrayList<>();
 
@@ -82,7 +83,6 @@ public class Message {
         return messageHash;
     }
 
-    // Records a successfully sent message
     public String SentMessage() {
         if (!checkMessageID()
                 || !checkRecipientCell()
@@ -100,7 +100,6 @@ public class Message {
         return "Message sent successfully.";
     }
 
-    // Displays sent messages
     public static void printMessages() {
         if (sentMessages.isEmpty()) {
             System.out.println("No sent messages.");
@@ -116,19 +115,18 @@ public class Message {
         }
     }
 
-    // Returns the total number of sent messages
     public static int returnTotalMessages() {
         return sentMessages.size();
     }
 
-    // Supports the alternate spelling if it appears in the brief
-    public static int returnTotalMessagess() {
-        return returnTotalMessages();
-    }
-
-    // Records a disregarded message
     public void disregardMessage() {
         disregardedMessages.add(this);
+    }
+
+    public void storeMessage() {
+        if (!storedMessages.contains(this)) {
+            storedMessages.add(this);
+        }
     }
 
     public static ArrayList<Message> getSentMessages() {
@@ -137,6 +135,10 @@ public class Message {
 
     public static ArrayList<Message> getDisregardedMessages() {
         return new ArrayList<>(disregardedMessages);
+    }
+
+    public static ArrayList<Message> getStoredMessages() {
+        return new ArrayList<>(storedMessages);
     }
 
     public static ArrayList<String> getMessageHashes() {

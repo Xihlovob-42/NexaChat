@@ -6,16 +6,6 @@ import java.util.Scanner;
 
 public class NexaChat {
 
-    private static void storeMessage(
-            Message message,
-            ArrayList<Message> storedMessages,
-            MessageStorage storage) {
-
-        storedMessages.add(message);
-        storage.saveMessages(storedMessages);
-        System.out.println("Message stored successfully.");
-    }
-
     public static void main(String[] args) {
 
         Scanner input = new Scanner(System.in);
@@ -120,7 +110,6 @@ public class NexaChat {
                     }
 
                     int messageNumber = Message.returnTotalMessages();
-
                     String messageHash =
                             message.createMessageHash(messageNumber);
 
@@ -157,7 +146,10 @@ public class NexaChat {
                             break;
 
                         case 3:
-                            storeMessage(message, storedMessages, storage);
+                            message.storeMessage();
+                            storedMessages.add(message);
+                            storage.saveMessages(storedMessages);
+                            System.out.println("Message stored successfully.");
                             break;
 
                         default:
