@@ -6,17 +6,23 @@ import java.util.Scanner;
 
 public class NexaChat {
 
+    private static void storeMessage(
+            Message message,
+            ArrayList<Message> storedMessages,
+            MessageStorage storage) {
+
+        storedMessages.add(message);
+        storage.saveMessages(storedMessages);
+        System.out.println("Message stored successfully.");
+    }
+
     public static void main(String[] args) {
 
         Scanner input = new Scanner(System.in);
         Register user = new Register();
         MessageStorage storage = new MessageStorage();
 
-        ArrayList<Message> sentMessages = new ArrayList<>();
-        ArrayList<Message> disregardedMessages = new ArrayList<>();
         ArrayList<Message> storedMessages = storage.loadMessages();
-
-        int messageCount = 0;
 
         System.out.println("Welcome to QuickChat.");
         System.out.println("Please register to continue.");
@@ -45,8 +51,7 @@ public class NexaChat {
             return;
         }
 
-        System.out.println();
-        System.out.println("Please log in.");
+        System.out.println("\nPlease log in.");
 
         System.out.print("Enter username: ");
         String enteredUsername = input.nextLine();
@@ -67,8 +72,8 @@ public class NexaChat {
         int choice = 0;
 
         while (choice != 3) {
-            System.out.println();
-            System.out.println("Please select an option:");
+
+            System.out.println("\nPlease select an option:");
             System.out.println("1) Send Messages");
             System.out.println("2) Show recently sent messages");
             System.out.println("3) Quit");
@@ -85,6 +90,7 @@ public class NexaChat {
             input.nextLine();
 
             switch (choice) {
+
                 case 1:
                     System.out.print("Enter recipient number: ");
                     String recipient = input.nextLine().trim();
@@ -113,20 +119,18 @@ public class NexaChat {
                         break;
                     }
 
+                    int messageNumber = Message.returnTotalMessages();
+
                     String messageHash =
-                            message.createMessageHash(messageCount);
+                            message.createMessageHash(messageNumber);
 
-                    System.out.println("Message ID: "
+                    System.out.println("\nMessage ID: "
                             + message.getMessageID());
-                    System.out.println("Message Hash: "
-                            + messageHash);
-                    System.out.println("Recipient: "
-                            + message.getRecipient());
-                    System.out.println("Message: "
-                            + message.getMessageText());
+                    System.out.println("Message Hash: " + messageHash);
+                    System.out.println("Recipient: " + message.getRecipient());
+                    System.out.println("Message: " + message.getMessageText());
 
-                    System.out.println();
-                    System.out.println("Choose what to do with the message:");
+                    System.out.println("\nChoose what to do with the message:");
                     System.out.println("1) Send Message");
                     System.out.println("2) Disregard Message");
                     System.out.println("3) Store Message");
@@ -142,45 +146,41 @@ public class NexaChat {
                     input.nextLine();
 
                     switch (messageChoice) {
+
                         case 1:
-                            sentMessages.add(message);
-                            messageCount++;
-                            System.out.println("Message sent successfully.");
+                            System.out.println(message.SentMessage());
                             break;
 
                         case 2:
-                            disregardedMessages.add(message);
+                            message.disregardMessage();
                             System.out.println("Message disregarded.");
                             break;
 
                         case 3:
-                            storedMessages.add(message);
-                            storage.saveMessages(storedMessages);
-                            System.out.println("Message stored.");
+                            storeMessage(message, storedMessages, storage);
                             break;
 
                         default:
                             System.out.println("Invalid choice.");
                     }
 
-                    System.out.println("Messages sent: "
-                            + sentMessages.size());
+                    System.out.println("Total messages sent: "
+                            + Message.returnTotalMessages());
                     break;
 
                 case 2:
-                    System.out.println("Coming Soon.");
+                    Message.printMessages();
                     break;
 
                 case 3:
-                    System.out.println(
-                            "Thank you for using QuickChat.");
+                    System.out.println("Thank you for using QuickChat.");
                     break;
 
                 case 4:
                     if (storedMessages.isEmpty()) {
                         System.out.println("No stored messages.");
                     } else {
-                        System.out.println("Stored Messages:");
+                        System.out.println("\nStored Messages:");
 
                         for (Message stored : storedMessages) {
                             System.out.println("Message ID: "

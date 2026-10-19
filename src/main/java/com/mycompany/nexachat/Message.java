@@ -1,6 +1,7 @@
 
 package com.mycompany.nexachat;
 
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Message {
@@ -9,6 +10,12 @@ public class Message {
     private String recipient;
     private String messageText;
     private String messageHash;
+
+    // Required message collections
+    private static final ArrayList<Message> sentMessages = new ArrayList<>();
+    private static final ArrayList<Message> disregardedMessages = new ArrayList<>();
+    private static final ArrayList<String> messageHashes = new ArrayList<>();
+    private static final ArrayList<String> messageIDs = new ArrayList<>();
 
     public Message(String messageID, String recipient,
                    String messageText, String messageHash) {
@@ -73,5 +80,70 @@ public class Message {
                 + ":" + firstWord + lastWord;
 
         return messageHash;
+    }
+
+    // Records a successfully sent message
+    public String SentMessage() {
+        if (!checkMessageID()
+                || !checkRecipientCell()
+                || !checkMessageLength()) {
+            return "Message could not be sent.";
+        }
+
+        sentMessages.add(this);
+        messageIDs.add(messageID);
+
+        if (messageHash != null && !messageHash.isEmpty()) {
+            messageHashes.add(messageHash);
+        }
+
+        return "Message sent successfully.";
+    }
+
+    // Displays sent messages
+    public static void printMessages() {
+        if (sentMessages.isEmpty()) {
+            System.out.println("No sent messages.");
+            return;
+        }
+
+        for (Message message : sentMessages) {
+            System.out.println("Message ID: " + message.getMessageID());
+            System.out.println("Recipient: " + message.getRecipient());
+            System.out.println("Message: " + message.getMessageText());
+            System.out.println("Message Hash: " + message.getMessageHash());
+            System.out.println("--------------------");
+        }
+    }
+
+    // Returns the total number of sent messages
+    public static int returnTotalMessages() {
+        return sentMessages.size();
+    }
+
+    // Supports the alternate spelling if it appears in the brief
+    public static int returnTotalMessagess() {
+        return returnTotalMessages();
+    }
+
+    // Records a disregarded message
+    public void disregardMessage() {
+        disregardedMessages.add(this);
+    }
+
+    public static ArrayList<Message> getSentMessages() {
+        return new ArrayList<>(sentMessages);
+    }
+
+    public static ArrayList<Message> getDisregardedMessages() {
+        return new ArrayList<>(disregardedMessages);
+    }
+
+    public static ArrayList<String> getMessageHashes() {
+        return new ArrayList<>(messageHashes);
+    }
+
+    public static ArrayList<String> getMessageIDs() {
+        return new ArrayList<>(messageIDs);
     }
 }
