@@ -2,6 +2,7 @@
 package com.mycompany.nexachat;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Message {
@@ -12,19 +13,17 @@ public class Message {
     private String messageHash;
     private String sender;
 
-    // Part 3 message collections
-    private static final ArrayList<Message> sentMessages = new ArrayList<>();
-    private static final ArrayList<Message> disregardedMessages = new ArrayList<>();
-    private static final ArrayList<Message> storedMessages = new ArrayList<>();
+    private static Message[] sentMessages = new Message[0];
+    private static Message[] disregardedMessages = new Message[0];
+    private static Message[] storedMessages = new Message[0];
 
-    private static final ArrayList<String> messageHashes = new ArrayList<>();
-    private static final ArrayList<String> messageIDs = new ArrayList<>();
+    private static String[] messageHashes = new String[0];
+    private static String[] messageIDs = new String[0];
 
-    // Default constructor for JSON loading
     public Message() {
+        this.sender = "Xihlovo M";
     }
 
-    // Existing constructor
     public Message(String messageID, String recipient,
                    String messageText, String messageHash) {
 
@@ -32,10 +31,9 @@ public class Message {
         this.recipient = recipient;
         this.messageText = messageText;
         this.messageHash = messageHash;
-        this.sender = "Developer";
+        this.sender = "Xihlovo M";
     }
 
-    // Constructor with sender
     public Message(String messageID, String recipient,
                    String messageText, String messageHash,
                    String sender) {
@@ -61,27 +59,22 @@ public class Message {
     }
 
     public String getSender() {
-        return sender;
+        return sender == null || sender.trim().isEmpty()
+                ? "Xihlovo M" : sender;
     }
 
-    // Validate message length
     public boolean checkMessageLength() {
-
         return messageText != null
                 && !messageText.trim().isEmpty()
                 && messageText.length() <= 250;
     }
 
-    // Validate international and South African numbers
     public boolean checkRecipientCell() {
-
         return recipient != null
                 && recipient.matches("^(\\+\\d{8,15}|0\\d{9})$");
     }
 
-    // Generate a ten-digit message ID
     public static String generateMessageID() {
-
         long id = ThreadLocalRandom.current().nextLong(
                 1_000_000_000L, 10_000_000_000L);
 
@@ -89,18 +82,15 @@ public class Message {
     }
 
     public boolean checkMessageID() {
-
         return messageID != null
                 && messageID.matches("\\d{10}");
     }
 
-    // Create message hash
     public String createMessageHash(int messageNumber) {
 
         if (messageID == null || messageID.length() < 2
                 || messageText == null
                 || messageText.trim().isEmpty()) {
-
             return "";
         }
 
@@ -116,49 +106,74 @@ public class Message {
         return messageHash;
     }
 
-    // Add message ID and hash to their collections
     private void addMessageDetails() {
 
-        if (messageID != null && !messageIDs.contains(messageID)) {
-            messageIDs.add(messageID);
+        if (messageID != null && !contains(messageIDs, messageID)) {
+            messageIDs = Arrays.copyOf(messageIDs, messageIDs.length + 1);
+            messageIDs[messageIDs.length - 1] = messageID;
         }
 
         if (messageHash != null && !messageHash.isEmpty()
-                && !messageHashes.contains(messageHash)) {
+                && !contains(messageHashes, messageHash)) {
 
-            messageHashes.add(messageHash);
+            messageHashes = Arrays.copyOf(
+                    messageHashes, messageHashes.length + 1);
+
+            messageHashes[messageHashes.length - 1] = messageHash;
         }
     }
 
-    // Send message
+    private static boolean contains(String[] array, String value) {
+        for (String item : array) {
+            if (item.equals(value)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean contains(Message[] array, Message value) {
+        for (Message item : array) {
+            if (item == value) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Message[] addMessage(Message[] array, Message message) {
+        if (contains(array, message)) {
+            return array;
+        }
+
+        Message[] updated = Arrays.copyOf(array, array.length + 1);
+        updated[updated.length - 1] = message;
+
+        return updated;
+    }
+
     public String SentMessage() {
 
         if (!checkMessageID()
                 || !checkRecipientCell()
                 || !checkMessageLength()) {
-
             return "Message could not be sent.";
         }
 
-        if (!sentMessages.contains(this)) {
-            sentMessages.add(this);
-        }
-
+        sentMessages = addMessage(sentMessages, this);
         addMessageDetails();
 
         return "Message sent successfully.";
     }
 
-    // Print all sent messages
     public static void printMessages() {
 
-        if (sentMessages.isEmpty()) {
+        if (sentMessages.length == 0) {
             System.out.println("No sent messages.");
             return;
         }
 
         for (Message message : sentMessages) {
-
             System.out.println("Message ID: " + message.getMessageID());
             System.out.println("Recipient: " + message.getRecipient());
             System.out.println("Message: " + message.getMessageText());
@@ -168,33 +183,22 @@ public class Message {
     }
 
     public static int returnTotalMessages() {
-        return sentMessages.size();
+        return sentMessages.length;
     }
 
-    // Disregard message
     public void disregardMessage() {
-
-        if (!disregardedMessages.contains(this)) {
-            disregardedMessages.add(this);
-        }
-
+        disregardedMessages = addMessage(disregardedMessages, this);
         addMessageDetails();
     }
 
-    // Store message
     public void storeMessage() {
-
-        if (!storedMessages.contains(this)) {
-            storedMessages.add(this);
-        }
-
+        storedMessages = addMessage(storedMessages, this);
         addMessageDetails();
     }
 
-    // Load stored messages into the collection
     public static void setStoredMessages(ArrayList<Message> messages) {
 
-        storedMessages.clear();
+        storedMessages = new Message[0];
 
         if (messages != null) {
             for (Message message : messages) {
@@ -205,13 +209,11 @@ public class Message {
         }
     }
 
-    // Display sender and recipient of stored messages
     public static String displayStoredSenderRecipient() {
 
         StringBuilder report = new StringBuilder();
 
         for (Message message : storedMessages) {
-
             report.append("Sender: ")
                     .append(message.getSender())
                     .append("\nRecipient: ")
@@ -224,20 +226,17 @@ public class Message {
                 : report.toString();
     }
 
-    // Find the longest stored message
     public static String getLongestStoredMessage() {
 
-        if (storedMessages.isEmpty()) {
+        if (storedMessages.length == 0) {
             return "";
         }
 
-        Message longest = storedMessages.get(0);
+        Message longest = storedMessages[0];
 
         for (Message message : storedMessages) {
-
             if (message.getMessageText().length()
                     > longest.getMessageText().length()) {
-
                 longest = message;
             }
         }
@@ -245,11 +244,9 @@ public class Message {
         return longest.getMessageText();
     }
 
-    // Search for a message using its ID
     public static Message searchMessageByID(String id) {
 
         for (Message message : storedMessages) {
-
             if (message.getMessageID().equals(id)) {
                 return message;
             }
@@ -258,14 +255,12 @@ public class Message {
         return null;
     }
 
-    // Search messages using recipient number
     public static ArrayList<Message> searchMessagesByRecipient(
             String recipient) {
 
         ArrayList<Message> results = new ArrayList<>();
 
         for (Message message : storedMessages) {
-
             if (message.getRecipient().equals(recipient)) {
                 results.add(message);
             }
@@ -274,16 +269,27 @@ public class Message {
         return results;
     }
 
-    // Delete a stored message using its hash
     public static String deleteMessageByHash(String hash) {
 
-        for (Message message : storedMessages) {
+        for (int i = 0; i < storedMessages.length; i++) {
 
-            if (message.getMessageHash().equals(hash)) {
+            if (storedMessages[i].getMessageHash().equals(hash)) {
 
-                storedMessages.remove(message);
+                Message deleted = storedMessages[i];
 
-                return "Message: \"" + message.getMessageText()
+                Message[] updated = new Message[storedMessages.length - 1];
+
+                System.arraycopy(storedMessages, 0, updated, 0, i);
+
+                System.arraycopy(
+                        storedMessages, i + 1,
+                        updated, i,
+                        storedMessages.length - i - 1
+                );
+
+                storedMessages = updated;
+
+                return "Message: \"" + deleted.getMessageText()
                         + "\" successfully deleted.";
             }
         }
@@ -291,12 +297,11 @@ public class Message {
         return "Message hash not found.";
     }
 
-    // Display complete stored-message report
     public static String displayStoredMessageReport() {
 
         StringBuilder report = new StringBuilder();
 
-        if (storedMessages.isEmpty()) {
+        if (storedMessages.length == 0) {
             return "No stored messages.";
         }
 
@@ -318,24 +323,23 @@ public class Message {
         return report.toString();
     }
 
-    // Get collection copies
     public static ArrayList<Message> getSentMessages() {
-        return new ArrayList<>(sentMessages);
+        return new ArrayList<>(Arrays.asList(sentMessages));
     }
 
     public static ArrayList<Message> getDisregardedMessages() {
-        return new ArrayList<>(disregardedMessages);
+        return new ArrayList<>(Arrays.asList(disregardedMessages));
     }
 
     public static ArrayList<Message> getStoredMessages() {
-        return new ArrayList<>(storedMessages);
+        return new ArrayList<>(Arrays.asList(storedMessages));
     }
 
     public static ArrayList<String> getMessageHashes() {
-        return new ArrayList<>(messageHashes);
+        return new ArrayList<>(Arrays.asList(messageHashes));
     }
 
     public static ArrayList<String> getMessageIDs() {
-        return new ArrayList<>(messageIDs);
+        return new ArrayList<>(Arrays.asList(messageIDs));
     }
 }
