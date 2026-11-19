@@ -6,9 +6,10 @@
     "messageHash": "58:1:HELLONEXACHAT"
   },
   {
-    "messageID": "9363619183",
-    "recipient": "+2712345678",
-    "messageText": "Testing storage",
-    "messageHash": "93:1:TESTINGSTORAGE"
+    "messageID": "2676939471",
+    "recipient": "+27834557896",
+    "messageText": "Testing JSON storage",
+    "messageHash": "26:0:TESTINGSTORAGE",
+    "sender": "Xihlovo Maluleke"
   }
 ]
